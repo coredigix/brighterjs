@@ -25,19 +25,15 @@ class $$Collection	extends ArrayUtils {
 	}
 
 	push	: function(){
-		var lst	= $$(arguments).unique().filter(ele => this.indexOf(ele) === -1);
+		var lst	= $$(arguments).filter(ele => this.indexOf(ele) === -1);
 		if(lst.length > 0)
 			super.push.apply(this, lst);
 		return this;
 	}
 	unshift	: function(){
-		var lst	= $$(arguments).unique().filter(ele => this.indexOf(ele) === -1);
+		var lst	= $$(arguments).filter(ele => this.indexOf(ele) === -1);
 		if(lst.length > 0)
 			super.unshift.apply(this, lst);
 		return this;
 	}
-
-	
-
-	
 }

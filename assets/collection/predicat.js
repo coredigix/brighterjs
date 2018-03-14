@@ -6,6 +6,9 @@ const _COLLECTIONOP	= {
 
 $$.plugin({
 	predicate	: function(predicat){
+		if(this._op('not'))
+			predicat	= (ele => !predicat(ele));
+		
 		if(this._op('all'))
 			return this.every(predicat);
 		else if(this._op('or'))

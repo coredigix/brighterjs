@@ -1,7 +1,7 @@
 /**
  * uniteless attributes
  */
-const _cssUniteLess= {
+const CSS_UNITE_LESS= {
 	animationIterationCount		: 1,
 	'animation-iteration-count'	: 1,
 	columnCount					: 1,
@@ -28,94 +28,67 @@ const _cssUniteLess= {
 /**
  * modify the style of the selected items
  * 	.css()				// get computed style of the first tag
- * 	.css('styleAttr')	// returns the computed value of the first tag, if "all" is set, return a list of all elements
- *  .all.css(...)		// return a list mapping all elements with previous options
- * 
+ *  .all.css()			// return a list mapping all elements with previous options
+ *  .css(':before')		// get before or after style
  * 	.css({key: value})	// set thos attributes to all selected tags
  */
 $$.plugin({
-	css	: function(arg, arg2){
-		var i, ele, computedStyle;
-		// if get the computed style
-			if(arguments.length === 0 || (typeof arg === 'string')){
-				// if we want the element or its pseudo-element
-					if(!arg)
-						arg	= null;
-					else if(arg.charAt(0) != ':'){
-						arg2	= arg;
-						arg		= null;
-					}
-				// op
-				var op	= (ele => {
-					var result	= window.getComputedStyle(ele, arg);// on peu ajouter le pseudo aussi
-				});
-				// if "all" is specified, get all computed styles inside a list
-				if(this._op('all')){
-					computedStyle	= this.mapTags(ele => {
-						var result	= window.getComputedStyle(ele, arg);// on peu ajouter le pseudo aussi
-						//get specifique property if required
-							if(arg2)
-								result	= result.getPropertyValue(arg2);
-						return result;
-					});
-				}else{
-					var ele	= this.getFirstTag();
-					if(ele){
-						computedStyle	= window.getComputedStyle(ele, arg);// on peu ajouter le pseudo aussi
-						//get specifique property if required
-							if(arg2)
-								computedStyle	= computedStyle.getPropertyValue(arg2);
-					}
-				}
-				return computedStyle;
-			}
-		// else if set style attribute
-			else{
-				// add px if required
-					for(i in arg){
-						if((typeof arg[i] === 'number') && !_cssUniteLess.hasOwnAttribute(i))
-							arg[i]	+= 'px';
-					}
-				// apply to all elements
-				this.eachTag(ele =>{
-					for(i in arg)
-						ele.style[i]	= arg[i];
-				});
-			}
-		return this;
+	css	: function(css){
+		var computedStyle;
+		// get computed style
+		if(arguments.length === 0)
+			computedStyle = this.tagOperation(ele => window.getComputedStyle(ele));
+		// get pseudo element style
+		else if(typeof css === 'string'){
+			css	= css.toLowerCase();
+			if(css != ':after' && css != ':before')
+				throw new Error('Incorrect argument: ' + css);
+			computedStyle = this.tagOperation(ele => window.getComputedStyle(ele, css));
+		}
+		// set style
+		else
+			computedStyle = this.style(css);
+		return computedStyle;
 	},
 	/**
 	 * the difference between style and css, is when returns values, style returns reel value in element style attributes
 	 * and do not use window.computed style, style do not access pseudo elements styles too
-	 * 	.style()				// get element style
-	 * 	.style('styleAttr')	// returns the computed value of the first tag, if "all" is set, return a list of all elements
-	 *  .all.style(...)		// return a list mapping all elements with previous options
+	 * 	.style()			// get element style
+	 *  .all.style()		// return a list mapping all elements with previous options
 	 * 
 	 * 	.style({key: value})	// set thos attributes to all selected tags
 	 */
 	style	: function(arg){
-		var result;
-		if(!arg || typeof arg == 'string'){
-			if(this._all)
-				result	= this.mapTags(arg ?
-					(ele => { return ele.style[arg]; })
-					:(ele => { return ele.style; })
-				);
-			else{
-				result	= this.getFirstTag();
-				if(result)
-					result	= arg ? result.style[arg] : result.style;
+		var stl, i;
+		// get style
+		if(arguments.length === 0)
+			stl	= this.tagOperation(ele => ele.style);
+		
+		// set style
+		else{
+			// fix style
+			for(i in arg){
+				if((typeof arg[i] === 'number') && !CSS_UNITE_LESS.hasOwnProperty(i))
+					arg[i]	+= 'px';
 			}
+			// apply for all elements
+			this.eachTag(ele => {
+				for(i in arg)
+					ele.style[i] = arg[i];
+			});
+			stl	= this;
 		}
-		else
-			result	= this.css(arg); // use css to insert values
-		return result;
+		return stl;
 	},
-	// remove css property
-	rmStyle	: function(){
-		var i, c= arguments.length;
+	/**
+	 * remove css property
+	 * .removeStyle('style')
+	 * .removeStryle('style1', 'style2', ...)
+	 */
+	removeStyle	: function(){
+		var i, len = arguments.length;
 		return this.eachTag(ele => {
-			for(i=0; i<c; ++i)
+			for(i=0; i<len; ++i)
 				ele.style.removeProperty(arguments[i]);
 		});
 	},
@@ -125,60 +98,84 @@ $$.plugin({
 	 * width(width)
 	 * all.width(width)
 	 */
-	width	: function(width){ return this.css(width && {width: width} || 'width'); },
+	width	: function(width){
+		if(arguments.length === 0)
+			return this.css().width;
+		else return this.style({width: width});
+	},
 	/**
 	 * height()
 	 * all.height()
 	 * height(height)
 	 * all.height(height)
 	 */
-	height	: function(height){ return this.css(height && {height: height} || 'height'); },
+	height	: function(height){
+		if(arguments.length === 0)
+			return this.css().height;
+		else return this.style({height: height});
+	},
 	/**
 	 * offsetWidth()
 	 * all.offsetWidth()
 	 */
-	offsetWidth: function(){ return _elementsAttr.call(this, 'offsetWidth'); },
+	get offsetWidth(){ return this.property('offsetWidth') },
 	/**
 	 * offsetHeight()
 	 * all.offsetHeight()
 	 */
-	offsetHeight: function(){ return _elementsAttr.call(this, 'offsetHeight'); },
+	get offsetHeight(){ return this.property('offsetHeight') },
 	/**
 	 * set/get the style.position
 	 */
-	position	: function(position){ return this.css(position && {position: position} || 'position'); },
-	/**
-	 * get coordination relative to the offset parent or to the document
-	 * offset(true?)
-	 * all.offset(true?)
-	 */
-	offset		: function(isRelativeToDocument){
-		var result, ele;
-		if(this._all){
-			result	= this.mapTags(ele => _getElementOffset(ele, isRelativeToDocument));
-		}else{
-			ele	= this.getFirstTag();
-			if(ele)
-				result	= _getElementOffset(ele, isRelativeToDocument);
-		}
-		return result;
+	position	: function(position){
+		if(arguments.length === 0)
+			return this.css().position;
+		else return this.style({position: position});
 	},
-	offsetLeft	: function(isRelativeToDocument){ _offsetTopLeft.call(this, 'offsetLeft', isRelativeToDocument); },
-	offsetTop	: function(isRelativeToDocument){ _offsetTopLeft.call(this, 'offsetTop', isRelativeToDocument); },
+	/**
+	 * get coordination relative to the offset parent
+	 * all.offset()
+	 */
+	offset		: function(){
+		return this.tagOperation(ele => ({top: ele.offsetTop, left: ele.offsetLeft}));
+	},
+	/**
+	 * get coordination relative to the document
+	 * all.offset()
+	 */
+	offsetDoc	: function(){
+		return this.tagOperation(ele => {
+			var result	= {
+				top	: 0,
+				left: 0
+			};
+			do{
+				if(!isNaN(ele.offsetTop))
+					result.top	+= ele.offsetTop;
+				if(!isNaN(ele.offsetLeft))
+					result.left	+= ele.offsetLeft;
+			} while(ele = ele.offsetParent);
+			return result;
+		});
+	}
 
 	/////
 	// SCROLL
 	/////
-	scrollTop	: function(value, animate){
-		//TODO animation
-		return _elementsAttr.call(this, 'scrollTop', value);
+	get scrollLeft(value, animDuration){
+		//TODO add animation
+		return value === undefined ? this.property('scrollLeft') : this.property('scrollLeft', value);
 	},
-	scrollTop	: function(value, animate){
-		//TODO animation
-		return _elementsAttr.call(this, 'scrollLeft', value);
+	get scrollTop(value, animDuration){
+		//TODO add animation
+		return value === undefined ? this.property('scrollTop') : this.property('scrollTop', value);
 	},
-	scrollHeight: function(){ return _elementsAttr.call(this, 'scrollHeight'); },
-	scrollWidth	: function(){ return _elementsAttr.call(this, 'scrollWidth'); },
+	get scrollWidth(){
+		return value === undefined ? this.property('scrollWidth') : this.property('scrollWidth', value);
+	},
+	get scrollHeight(){
+		return value === undefined ? this.property('scrollHeight') : this.property('scrollHeight', value);
+	},
 	/**
 	 * see events.scroll
 	 * scroll(callBack, optionalBollAnimate)			: listener onscroll
