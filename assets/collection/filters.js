@@ -1,69 +1,78 @@
 $$.plugin({
 /**
- * filter()								// do nothing
- * filter(null | undefined )			// do nothing
- * filter(selector, selector2, ...)		// filter thos elements
- * filter(function, fx2, ...)		// use this fx
- * filter(HTMLElement)	// remove this HTML element from list
- * filter([HTMLElement])// remove all those HTML Elements (Array or Array like)
- * filter($$Object)		// remove all elements in this list in the collection
- * filter(HTMLElement, ...)
+ * filter(selector)							// keep only elements that matches this selector
+ * filter(function)							// keep only elements matched by this function
+ * filter(HTMLElement)						// keep onl this tag if exits
+ * filter([HTMLElement])					// return intersection of this array and current array
+ * filter($$Object | jQuery | arrayLike)	// return intersection of this array and current array
  * 
  * not.filter			// inverse the result of the filter
- * all.filter(fx, fx2, )// elements must mache all criteria instead of one of theme
  */
-	filter		: function(){
-		var result, fx, filterFxArr, filterFunc;
-		if(arguments.length === 0)
-			result	= this.duplicate(); // do copy
-		else {
-			// create filter fx
-			filterFxArr = Array.prototype.map.call(arguments, function(arg) {
-				if(typeof arg === 'function')	// function
-					fx	= arg;
-				else if(typeof arg == 'string')	// selector
-					fx	= (ele => _ElementMatches(ele, arg));
-				else if(arg.nodeType)			// DOM element
-					fx	= (ele => ele === arg);
-				else if('indexOf' in arg)		// brighter object or Array or Array like object
-					fx	= (ele =>  arg.indexOf(ele) > -1);
-				else if('index' in arg)			// jquery
-					fx	= (ele =>  arg.index(ele) > -1);
-				else if(!arg)
-					fx = (ele => true);
-				else
-					throw new Error('Illegal argument ' + arg);
-				return fx;
+	filter		: function(condition){
+		var fx;
+		if(arguments.length !== 1)
+			throw new Error('Needs exactly one argument');
+		// create filter fx
+		if(typeof condition === 'string')
+			fx	= ( ele => matcheSelector(ele, condition));
+		// match function
+		else if(typeof condition === 'function')
+			fx	= condition;
+		else if(Reflect.has(condition, 'length') === true)
+			fx	= (ele => {
+				// we didn't use "indexOf" because this needs to be applied to ArrayLike lists too
+				for(var i = 0, len = condition.length; i < len; ++i){
+					if(condition[i] === ele)
+						return true
+				}
+				return false;
 			});
-			// filter fx
-			if(this._op('all'))
-				filterFunc	= (ele => filterFxArr.every(fx => fx(ele)));
-			else
-				filterFunc	= (ele => filterFxArr.some(fx => fx(ele)));
-			// apply filter
-			result	= Array.prototype.filter.call(this, this._op('not') ? (ele => !filterFunc(ele)) : filterFunc);
-		}
-		return result;
-	},
-
-	first	: function(){ return $$(super.first.call(arguments)); },
-	last	: function(){ return $$(super.last.call(arguments)); },
-	firstTag: function(predicat, start, end){ return $$(super.first(ele => ele && ele.nodeType === 1 && predicat, start, end)) },
-	lastTag	: function(predicat, start, end){ return $$(super.last(ele => ele && ele.nodeType === 1 && predicat, start, end)) },
-
-	// Each
-	// each tag (tag only, exclude attributeNode, commentNode, textNode, ...)
-	eachTag	: function(cb){
-		return this.each(ele => ele && ele.nodeType === 1 ? cb(ele, i) : true );
+		else
+			fx = (ele => ele === condition);
+		return Array.prototype.filter.call(this, this._op('not') === true ? (ele => !fx(ele)) : fx);
 	},
 
 	/**
-	 * map tags and returns undefined for non tags
+	 * get first element that matches a condition
+	 * first()							get the first element
+	 * first(ele => true|false) 		get the first element that matches this condition
+	 * first('div.cc')					get the first element that matches this selector
 	 */
-	mapTags	: function(cb){
-		return this.map(ele => ele && ele.nodeType === 1 ? cb(ele, i) : undefined );
+	first(condition){
+		var len	= this.length;
+		if(len > 0){
+			if(arguments.length === 0)
+				return this[0];
+			else {
+				for(var index = 0;index < len; ++index){
+					if(elementMatch(this[index], condition) === true)
+						return this[index];
+				}
+			}
+		}
 	},
 
+	/**
+	 * get the last element that matches a condition
+	 * last()						get the last element
+	 * last(ele => true|false) 		get the last element that matches this condition
+	 * last('div.cc')				get the last element that matches this selector
+	 */
+	last(condition){
+		var index	= this.length - 1;
+		if(index >= 0){
+			if(arguments.length === 0)
+				return this[index];
+			else {
+				for(; index >= 0; --index){
+					if(elementMatch(this[index], condition) === true)
+						return this[i];
+				}
+			}
+		}
+	},
+
+	
 	/**
 	 * do someting on a tag or throw error if not a tag or other errors
 	 * @return cb return value
@@ -79,42 +88,53 @@ $$.plugin({
 	// 			throw err;
 	// 	}
 	// }
-	doFirstTag	: function(cb, preventSilentError){
-		var tag	= this[0];
-		try{
-			if(tag.nodeType !== 1)
-				throw new Error('Not a tag');
-			return cb(tag);
-		} catch(err){
-			if(preventSilentError === true)
-				throw err;
-		}
-	},
+	// doFirstTag	: function(cb, preventSilentError){
+	// 	var tag	= this[0];
+	// 	try{
+	// 		if(tag.nodeType !== 1)
+	// 			throw new Error('Not a tag');
+	// 		return cb(tag);
+	// 	} catch(err){
+	// 		if(preventSilentError === true)
+	// 			throw err;
+	// 	}
+	// },
 
 	/**
-	 * .tagOperation(cb)	// do operation on the first tag and return it's value
-	 * .all.tagOperation(cb)// do operation on all tags and return an array of it's values
+	 * .get(int)		get this element
+	 * .get(cb) 		execute operation on the first element and returns it's value
+	 * .all.get(cb)		equivalent to .map(cb)
 	 */
-	tagOperation	: function(cb){
-		if(this._op('all') === true)
-			return this.mapTags(cb);
-		else return this.doFirstTag(cb);
+	get	: function(cb){
+		if(this.length === 0){} // return undefined
+		// do some operation and get result
+		else if(typeof cb === 'function'){
+			if(this._op('all') === true)
+				return this.map(cb);
+			else 
+				return cb(this[0]);
+		}
+		// int
+		else if(typeof cb === 'number'){
+			if(cb < 0)
+				cb += this.length;
+			return this[cb];
+		}
+		// 
+		else throw new Error('Illegal argument');
 	}
 
-	get tags(){
-		return this.filter(ele => ele && ele.nodeType === 1);
-	},
-
 	/**
+	 * matches elements that contains some childrens
 	 * .has(selector)		: select elements that has some childs
 	 * .has(ArrayLike)		: Array, $$Object, HTMLElements or even jQuery object
-	 * .has()
 	 * .not.has	: inverse of has
 	 */
 	has			: function(selector){
-		var filterFx	= (ele => ele.find(selector).length !== 0);
-		// apply
-		return this.filter(this._op('not') === true ? (ele => !filterFx(ele)) : filterFx);
+		if(arguments.length !== 1)
+			throw new Error('Illegal arguments length');
+
+		return this.filter(this._op('not') === true ? (ele => _find(ele, selector) === undefined) : (ee => _find(ele, selector) !== undefined));
 	},
 
 	/**
@@ -125,8 +145,3 @@ $$.plugin({
 	 	this.filter(this._op('not') ? (ele => _elementIsVisible(ele)) : _elementIsVisible);
 	 }
 });
-
-// get first tag
-function _getFirstTag(tab){
-	return Array.prototype.find.call(tab, ele => ele.nodeType === 1);
-}

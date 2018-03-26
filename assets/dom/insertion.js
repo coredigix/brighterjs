@@ -87,7 +87,7 @@ $$.plugin({
 		var $$arg, element;
 		// function
 		if(typeof arg	== 'function')
-			this.each(node => {
+			this.forEach(node => {
 				element	= arg(node);
 				if(!element){}
 				else if(element.nodeType)
@@ -103,23 +103,24 @@ $$.plugin({
 			// replace with copies
 			if(this._op('all'))
 				this.forEach(node => {
-					node.parentNode.replaceChild($$arg.clone(true).toFragment, node);
+					node.parentNode.replaceChild($$arg.clone(true).toFragment(), node);
 				});
 			// replace first tag
 			else
-				this.doFirstTag(tag => ele.parentNode.replaceChild($$arg.toFragment, ele), true);
+				this.get(tag => ele.parentNode.replaceChild($$arg.toFragment, ele));
 		}
 		return this;
 	},
 	/**
 	 * empty each element
 	 */
-	empty		: function(filter){
-		return _insertFxFilter(arguments, node => {
+	empty		: function(){
+		this.forEach(node => {
 			while(node.firstChild)
 				node.removeChild(node.firstChild);
 		});
-	},
+		return this;
+	},//-----------------------------------------------------------------------------------------------------------------------
 	/**
 	 * remove all elements from the DOM and destroy theme
 	 */

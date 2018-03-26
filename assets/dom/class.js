@@ -1,57 +1,55 @@
 $$.plugin({
 	/**
-	 * className()				: get the className of the fist eleemnt
-	 * className(className)		: set the className of all elements
-	 * all.className()			: get all elements className as a list
+	 * .className()				: get the className of the fist eleemnt
+	 * .className(className)	: set the className of all elements
+	 * .all.className()			: get all elements className as a list
 	 */
 	className		: function(className){
 		return arguments.length === 0 ? this.attr('class') : this.attr({'class' : className});
 	},
 	/**
-	 * addClass('cl1 cl2')
-	 * addClass(['cl1', 'cl2'])
+	 * .addClass('cl1', 'cl2')
+	 * .addClass(['cl1', 'cl2'])
 	 */
-	addClass	: function(){
-		var cls	= _prepClassArgs(arguments);
-		this.eachTag(ele => ele.classList.remove.apply(ele.classList, cls));
+	addClass	: function(cl){
+		if(!Array.isArray(cls))
+			cls	= Array.from(arguments);
+		this.forEach(tag => tag.classList.add.apply(tag.classList, cls));
 	},
 	/**
-	 * removeClass('cl1 cl2')
+	 * removeClass('cl1', 'cl2')
 	 * removeClass(['cl1', 'cl2'])
 	 */
-	removeClass	: function(){
-		var cls	= _prepClassArgs(arguments);
-		this.eachTag(ele => ele.classList.remove.apply(ele.classList, cls));
+	removeClass	: function(cls){
+		if(!Array.isArray(cls))
+			cls	= Array.from(arguments);
+		this.forEach(tag => tag.classList.remove.apply(tag.classList, cls));
 	},
 	/**
-	 * .hasClass('cl')			if the first element has this class
-	 * .hasClass('cl1 cl2')		if the first element has those classes
-	 * .hasClass(['cl1', 'cl2'])		if the first element has those classes
-	 * .all.hasClass('cl')		if all elements has this class
-	 * .or.hasClass('cl')		if some element has this class
+	 * .hasClass('cl')				if the first element has this class
+	 * .hasClass('cl1', 'cl2')		if the first element has those classes
+	 * .hasClass(['cl1', 'cl2'])	if the first element has those classes
+	 * .all.hasClass('cl')			if all elements has this class
+	 * .or.hasClass('cl')			if some element has this class
+	 * .not.hasClass				inverse
 	 */
-	hasClass	: function(){
-		var cls		= _prepClassArgs(arguments);
+	hasClass	: function(cls){
+		if(!Array.isArray(cls))
+			cls	= Array.from(arguments);
 		return this.predicate( ele => cls.every( c => ele.classList.contains(c) ) );
 	},
 	/**
-	 * toggleClass('className', force)
+	 * .toggleClass('className', force)
+	 * .toggleClass(['cl1', 'cl2'], force)
+	 * .
 	 */
 	toggleClass	: function(className, force){
-	 	var lst	= _prepClassArgs(arguments);
-
-	 	this.eachTag(
-	 		arguments.length === 1 ?
-	 		ele => { lst.forEach(c => ele.classList.toggle(c)) }
-	 		: ele => { lst.forEach(c => ele.classList.toggle(c, force)) }
-	 	);
+		if(Array.isArray(className)){
+			this.forEach(tag => {
+				className.forEach( tag => tag.classList.toggle(className, force) );
+			});
+		}
+		else this.forEach( tag => tag.classList.toggle(className, force) );
+	 	return this;
 	}
 });
-function _prepClassArgs(args){
-	var cls	= args[0];
-	if(typeof cls === 'string')
-		cls	= cls.trim().split(/\s+/);
-	else if(!Array.isArray(cls))
-		throw new Error('Incorrect arguments');
-	return cls;
-}
