@@ -37,13 +37,13 @@ $$.plugin({
 		var computedStyle;
 		// get computed style
 		if(arguments.length === 0)
-			computedStyle = this.tagOperation(ele => window.getComputedStyle(ele));
+			computedStyle = this.get(ele => window.getComputedStyle(ele));
 		// get pseudo element style
 		else if(typeof css === 'string'){
 			css	= css.toLowerCase();
 			if(css != ':after' && css != ':before')
-				throw new Error('Incorrect argument: ' + css);
-			computedStyle = this.tagOperation(ele => window.getComputedStyle(ele, css));
+				throw new Error('Illegal arguments');
+			computedStyle = this.get(ele => window.getComputedStyle(ele, css));
 		}
 		// set style
 		else
@@ -62,17 +62,17 @@ $$.plugin({
 		var stl, i;
 		// get style
 		if(arguments.length === 0)
-			stl	= this.tagOperation(ele => ele.style);
+			stl	= this.get(ele => ele.style);
 		
 		// set style
-		else{
+		else {
 			// fix style
 			for(i in arg){
 				if((typeof arg[i] === 'number') && !CSS_UNITE_LESS.hasOwnProperty(i))
 					arg[i]	+= 'px';
 			}
 			// apply for all elements
-			this.eachTag(ele => {
+			this.forEach(ele => {
 				for(i in arg)
 					ele.style[i] = arg[i];
 			});
@@ -83,14 +83,15 @@ $$.plugin({
 	/**
 	 * remove css property
 	 * .removeStyle('style')
-	 * .removeStryle('style1', 'style2', ...)
+	 * .removeStyle('style1', 'style2', ...)
 	 */
 	removeStyle	: function(){
 		var i, len = arguments.length;
-		return this.eachTag(ele => {
+		this.forEach(ele => {
 			for(i=0; i<len; ++i)
 				ele.style.removeProperty(arguments[i]);
 		});
+		return this;
 	},
 	/**
 	 * width()
@@ -125,26 +126,10 @@ $$.plugin({
 	 */
 	get offsetHeight(){ return this.property('offsetHeight') },
 	/**
-	 * set/get the style.position
+	 * get the position relative to the document
 	 */
 	position	: function(position){
-		if(arguments.length === 0)
-			return this.css().position;
-		else return this.style({position: position});
-	},
-	/**
-	 * get coordination relative to the offset parent
-	 * all.offset()
-	 */
-	offset		: function(){
-		return this.tagOperation(ele => ({top: ele.offsetTop, left: ele.offsetLeft}));
-	},
-	/**
-	 * get coordination relative to the document
-	 * all.offset()
-	 */
-	offsetDoc	: function(){
-		return this.tagOperation(ele => {
+		return this.get(ele => {
 			var result	= {
 				top	: 0,
 				left: 0
@@ -157,25 +142,42 @@ $$.plugin({
 			} while(ele = ele.offsetParent);
 			return result;
 		});
-	}
+	},
+	/**
+	 * get coordination relative to the offset parent
+	 * all.offset()
+	 */
+	offset		: function(){
+		return this.get(ele => ({top: ele.offsetTop, left: ele.offsetLeft}));
+	},
 
 	/////
 	// SCROLL
 	/////
-	get scrollLeft(value, animDuration){
-		//TODO add animation
-		return value === undefined ? this.property('scrollLeft') : this.property('scrollLeft', value);
+	scrollLeft(value, animDuration){
+		if(arguments.length === 0)
+			return this.property('scrollLeft');
+		else {
+			this.property('scrollLeft', value);
+			//TODO add animation
+			return this;
+		}
 	},
-	get scrollTop(value, animDuration){
-		//TODO add animation
-		return value === undefined ? this.property('scrollTop') : this.property('scrollTop', value);
+	scrollTop(value, animDuration){
+		if(arguments.length === 0)
+			return this.property('scrollTop');
+		else {
+			this.property('scrollTop', value);
+			//TODO add animation
+			return this;
+		}
 	},
-	get scrollWidth(){
-		return value === undefined ? this.property('scrollWidth') : this.property('scrollWidth', value);
-	},
-	get scrollHeight(){
-		return value === undefined ? this.property('scrollHeight') : this.property('scrollHeight', value);
-	},
+	// get scrollWidth(){
+	// 	return value === undefined ? this.property('scrollWidth') : this.property('scrollWidth', value);
+	// },
+	// get scrollHeight(){
+	// 	return value === undefined ? this.property('scrollHeight') : this.property('scrollHeight', value);
+	// },
 	/**
 	 * see events.scroll
 	 * scroll(callBack, optionalBollAnimate)			: listener onscroll

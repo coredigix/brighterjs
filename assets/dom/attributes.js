@@ -8,17 +8,11 @@ $$.plugin({
 		var ele, result;
 		if(arguments.length === 1){
 			// get values
-			if(typeof attrs === 'string'){
-				if(this._op('all'))
-					result	= this.tags.map(ele => ele.getAttribute(attrs));
-				else {
-					ele		= _getFirstTag(this);
-					result	= ele ? ele.getAttribute(attrs) : null;
-				}
-			}
+			if(typeof attrs === 'string')
+				result	= this.get(ele => ele.getAttribute(attrs)) // .all. is supported inside "get" method
 			// set attributes
 			else {
-				this.eachTag(ele => {
+				this.forEach(ele => {
 					for(ele in attrs)
 						ele.setAttribute(ele, attrs[ele]);
 				});
@@ -26,42 +20,32 @@ $$.plugin({
 			}
 		}
 		// return attributes name list
-		else if(arguments.length === 0){
-			if(this._op('all'))
-				result	= this.tags.map(ele => ele.getAttributeNames());
-			else {
-				ele	= _getFirstTag(this);
-				result	= ele ? ele.getAttributeNames() : [];
-			}
-		}
+		else if(arguments.length === 0)
+			result	= this.get(ele => ele.getAttributeNames()); // .all. is supported inside "get" method
 		else throw new Error('uncorrect arguments length');
 		return result;
 	},
+	/**
+	 * if elements has this attribute
+	 * .hasAttr('attrName')			if the first element has this attribute
+	 * .all.hasAttr('attrName')		if the all elements have this attribute
+	 * .or.hasAttr('attrName')		if the some element has this attribute
+	 * .not.hasAttr('attrName')		has not this attribute
+	 */
 	// hasAttr('attrName')
 	// .or.hasAttr('attrName')
 	hasAttr	: function(attrName){
-		return this._op('or') ?
-			this.tags.every(ele => {
-				ele.hasAttribute(attrName);
-			})
-			: this.tags.some(ele => {
-				ele.hasAttribute(attrName);
-			});
+		return this.predicate(ele => ele.hasAttribute(attrName));
 	},
 	removeAttr: function(attrName){
-		this.eachTag(tag => {
+		this.forEach(tag => {
 			tag.removeAttribute(attrName);
 		});
 		return this;
 	},
-	// .property('href')
-	// .all.property('href')
+	// .property('href')		get property value of the first element
+	// .all.property('href')	get property value of all elements
 	property	: function(propName){
-		if(this._op('all'))
-			return this.tags.map(tag => tag[propName]);
-		else {
-			var tag	= _getFirstTag(this);
-			return tag ? tag[propName] : undefined;
-		}
+		return this.get(tag => tag[propName]);
 	}
 });

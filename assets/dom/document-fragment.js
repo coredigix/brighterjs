@@ -5,9 +5,9 @@ $$.rootPlugin({
 
 // put all elements into fragment
 $$.plugin({
-	get toFragment(){
+	toFragment(){
 		var frag	= document.createDocumentFragment();
-		this.each(ele => { frag.appendChild(ele) });
+		this.forEach(ele => frag.appendChild(ele) );
 		return $$(frag);
 	}
 });
