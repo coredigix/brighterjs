@@ -3,11 +3,11 @@ $$.plugin({
 	 * get a new collection with parents of current elements
 	 */
 	get parent(){
-		return this.tags.map(ele => ele.parentNode).unique();
+		return this.map(ele => ele.parentNode).unique();
 	},
 	// get a new collection with offsetParents of current elments
 	get offsetParent(){
-		return this.tags.map(ele => ele.offsetParent).unique();
+		return this.map(ele => ele.offsetParent).unique();
 	},
 
 	/**
@@ -34,15 +34,15 @@ $$.plugin({
 
 function _getChilds($obj, attrName){
 	var childs	= [], tagChilds, child;
-	$obj.forEachTag(tag => {
+	$obj.forEach(tag => {
 		tagChilds	= tag[attrName];
 		if(tagChilds){
-			for(var i =0, len = tagChilds.length; i< len; ++i){
+			for(var i = 0, len = tagChilds.length; i < len; ++i){
 				child	= tagChilds.item(i);
 				if(childs.indexOf(child) === -1)
 					childs.push(child);
 			}
 		}
-	})
+	});
 	return $$(childs);
 }

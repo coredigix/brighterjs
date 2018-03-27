@@ -124,14 +124,14 @@ $$.plugin({
 	/**
 	 * remove all elements from the DOM and destroy theme
 	 */
-	remove		: function(filter){
-		return _insertFxFilter(arguments, node => node.remove());
+	remove		: function(){
+		return this.forEach(node => node.remove());
 	},
 	/**
 	 * detach all elements from the DOM
 	 */
-	detach		: function(filter){
-		return _insertFxFilter(arguments, node => node.remove());
+	detach		: function(){
+		return this.forEach(node => node.remove());
 	},
 	/**
 	 * remove parents and append elements to perents of parents
@@ -152,7 +152,7 @@ function _appendPrepend(addFx){
 		var element, $$arg;
 		// if is a function
 		if(typeof arg	=== 'function')
-			this.each(ele => {
+			this.forEach(ele => {
 				if('appendChild' in ele){
 					element	= arg(ele);
 					if(!element){}
@@ -170,13 +170,13 @@ function _appendPrepend(addFx){
 
 			// append clones to all tags
 			if(this._op('all'))
-				this.each(ele => {
+				this.forEach(ele => {
 					if('appendChild' in ele)
 						addFx(ele, $$arg.clone(true).toFragment);
 				});
 			// append to first tag
 			else
-				this.doFirstTag(e => addFx(ele, $$arg.toFragment), true);
+				this.get(e => addFx(ele, $$arg.toFragment), true);
 		}
 		return this;
 	}
@@ -189,7 +189,7 @@ function _appendTo_prependTo(addFx){
 		var list, $$arg, parent;
 		// if is a function
 		if(typeof arg	== 'function')
-			this.each(ele => {
+			this.forEach(ele => {
 				parent	= arg(ele);
 				if(!parent){}
 				else if('appendChild' in parent)
@@ -212,7 +212,7 @@ function _appendTo_prependTo(addFx){
 					}
 					// add to first parent
 					else
-						list.doFirstTag(parent => addFx(parent, this.toFragment), true);
+						list.get(parent => addFx(parent, this.toFragment), true);
 				}
 			}
 		return this;
@@ -225,10 +225,4 @@ function _prepend(parent, child){
 		parent.insertBefore(child, parent.firstChild);
 	else
 		parent.appendChild(child);
-}
-
-// fx with filter
-function _insertFxFilter(arg, cb){
-	(arg.length === 0 ? this : this.filter(filter)).forEach(cb);
-	return this;
 }

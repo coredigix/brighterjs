@@ -36,13 +36,36 @@ class $$Collection extends Array {
 	}
 
 	/**
-	 * each
+	 * each			iterate on the list
+	 * rtl.each	iterate right to left
 	 */
 	each(cb){
-		for(var i=0, len = this.length; i < len; ++i){
-			if(cb(this[i], i) === false)
-				break;
-		}
+		var i, len = this.length;
+		if(this._op('rtl') === true)
+			for(i = len - 1; i >= 0; --i){
+				if(cb(this[i], i) === false)
+					break;
+			}
+		else
+			for(i=0; i < len; ++i){
+				if(cb(this[i], i) === false)
+					break;
+			}
+		return this;
+	}
+
+	/**
+	 * forEach
+	 * rtl.forEach	iterate right to left
+	 */
+	forEach(cb){
+		var i, len = this.length;
+		if(this._op('rtl') === true)
+			for(i = len - 1; i >= 0; --i)
+				cb(this[i], i);
+		else
+			for(i=0; i < len; ++i)
+				cb(this[i], i);
 		return this;
 	}
 

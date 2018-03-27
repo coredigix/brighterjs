@@ -7,13 +7,27 @@ $$.plugin({
 	 */
 	text	: function(text){
 		if(arguments.length === 0)
-			return this.tagOperation(tag => tag.innerText);
+			return this.get(tag => tag.innerText);
 		else
-			this.eachTag(tag => { tag.innerText = text });
-		return this;
+			return this.forEach(tag => tag.innerText = text);
 	},
 
-	get html(){ return this.tagOperation(tag => tag.innerHTML) },
+	/**
+	 * see "get" method for all alternatives
+	 * html
+	 * .all.html
+	 */
+	html	: function(html){
+		if(arguments.length === 0)
+			return this.get(tag => tag.innerHTML);
+		else
+			return this.forEach(tag => tag.innerHTML = html);
+	},
 
-	get outerHTML(){ return this.tagOperation(tag => tag.outerHTML) }
+	/**
+	 * see "get" method for all alternatives
+	 * outerHTML
+	 * .all.outerHTML
+	 */
+	get outerHTML(){ return this.get(tag => tag.outerHTML) }
 });

@@ -3,15 +3,15 @@ $$.plugin({
 	 * immediately following subling elements in the DOM
 	 * .all.next					// get all next elements
 	 */
-	get next(){
-		return _sibling(this, 'nextSibling');
+	next	: function(selector){
+		return _sibling(this, 'nextSibling', selector);
 	},
 	/**
 	 * immediately following subling elements in the DOM
 	 * .all.prev					// get all next elements
 	 */
-	get prev(){
-		return _sibling(this, 'previousSibling');
+	prev	: function(selector){
+		return _sibling(this, 'previousSibling', selector);
 	},
 	/**
 	 * get next elements until somme selected one
@@ -38,12 +38,12 @@ $$.plugin({
 	/**
 	 * get siblings elements
 	 */
-	get siblings() {
-		return this.tags.parent.children();
+	siblings	: function(selector) {
+		return this.parent.children(selector);
 		// return this.tags.children()map(ele => {
 		// 	return ele.parentNode && ele.parentNode.firstChild;
 		// }).next(selector);
-	}, //TODO
+	},
 	/**
 	 * concatination of nextUntil et prevUntil
 	 */
@@ -63,19 +63,23 @@ $$.plugin({
 function _sibling($this, attrName){
 	var nodes	= [];
 	if($this._op('all'))
-		$this.eachTag(tag => {
+		$this.forEach(tag => {
 			while(tag = tag[attrName]){
 				if(nodes.indexOf(tag) === -1)
 					nodes.push(tag);
 			}
 		});
 	else
-		$this.eachTag(tag => {
+		$this.forEach(tag => {
 			tag	= tag[attrName];
 			if(tag && nodes.indexOf(tag) === -1)
 				nodes.push(tag);
 		});
-	return $$(nodes);
+	// filter
+	nodes	= $$(nodes);
+	if(selector)
+		nodes = nodes.filter(selector);
+	return nodes;
 }
 
 
@@ -90,7 +94,7 @@ function _siblingUntil(attr){
 			returnsAfterTarget		= this._op('not'); // return elements after targetElement instead of before it
 		// if no selector, just execute "next"
 			if(!selector)
-				result	= this.all[attr	=== 'nextSibling' ? 'next' : 'prev'];
+				result	= this.all[attr	=== 'nextSibling' ? 'next' : 'prev']();
 		// else
 			else{
 				result	= $$(this.tags.map(

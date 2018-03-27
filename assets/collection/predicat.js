@@ -1,7 +1,8 @@
 const _COLLECTIONOP	= {
 	all	: Symbol(),
 	not	: Symbol(),
-	or	: Symbol()
+	or	: Symbol(),
+	rtl	: Symbol() // fx each will begin from right to left
 };
 
 $$.plugin({
@@ -37,6 +38,10 @@ $$.plugin({
 	},
 	get not(){
 		this[_COLLECTIONOP.not] = true;
+		return this;
+	},
+	get rtl(){
+		this[_COLLECTIONOP.rtl] = true;
 		return this;
 	},
 	

@@ -40,16 +40,19 @@ $$.plugin({
 	 */
 	first(condition){
 		var len	= this.length;
+		var result	= $$();
 		if(len > 0){
 			if(arguments.length === 0)
-				return this[0];
-			else {
-				for(var index = 0;index < len; ++index){
-					if(elementMatch(this[index], condition) === true)
-						return this[index];
-				}
-			}
+				result.push(this[ this._op('rtl') === true ? len - 1 : 0]);
+			else
+				this.each(ele => {
+					if(elementMatch(ele, condition) === true){
+						result.push(ele);
+						return false;
+					}
+				});
 		}
+		return result;
 	},
 
 	/**
@@ -59,17 +62,7 @@ $$.plugin({
 	 * last('div.cc')				get the last element that matches this selector
 	 */
 	last(condition){
-		var index	= this.length - 1;
-		if(index >= 0){
-			if(arguments.length === 0)
-				return this[index];
-			else {
-				for(; index >= 0; --index){
-					if(elementMatch(this[index], condition) === true)
-						return this[i];
-				}
-			}
-		}
+		this.rtl.first(condition);
 	},
 
 	
@@ -134,14 +127,48 @@ $$.plugin({
 		if(arguments.length !== 1)
 			throw new Error('Illegal arguments length');
 
-		return this.filter(this._op('not') === true ? (ele => _find(ele, selector) === undefined) : (ee => _find(ele, selector) !== undefined));
+		return this.filter(ee => _find(ele, selector) !== undefined); // "not" is implemented inside "filter" function
 	},
 
 	/**
+	 * filter to get only visible items
 	 * visible		// filter visible items
 	 * not.visible	// filter hidden items
 	 */
-	 get visible(){
-	 	this.filter(this._op('not') ? (ele => _elementIsVisible(ele)) : _elementIsVisible);
-	 }
+	 get visible(){ return this.filter(_elementIsVisible); },// "not" is implemented inside "filter" function
+
+	/**
+	 * filter to get only visible items in the view port (visible to the user)
+	 * visible		// filter visible items
+	 * not.visible	// filter hidden items
+	 */
+	 get userVisible(){ return this.filter(_elementIsUserVisible); },
+
+	/**
+	 * get only elements attached to DOM
+	 * get only elements not attached to DOM
+	 */
+	 get attached(){ return this.filter(_elementIsAttached); },
+
+	/**
+	* isVisible()		: is the first tag is visible
+	* or.isVisible()	: is at least one tag is visible
+	* all.isVisible()	: is all tags are visible
+	*/
+	isVisible		: function(){ return this.predicate(_elementIsVisible); },
+	isUserVisible	: function(){ return this.predicate(_elementIsUserVisible); },
+	isAttached		: function(){ return this.predicate(_elementIsAttached); }
 });
+
+
+function _elementIsVisible(ele){
+	return ele.offsetWidth || ele.offsetHeight || ele.getClientRects().length > 0;
+}
+function _elementIsUserVisible(ele){
+	throw new Error('unimplemented');
+	//TODO
+}
+function _elementIsAttached(ele){
+	throw new Error('unimplemented');
+	//TODO
+}
