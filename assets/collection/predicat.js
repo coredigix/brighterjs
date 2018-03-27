@@ -45,12 +45,9 @@ $$.plugin({
 		return this;
 	},
 	
-	_op(op, fxTrue, fxFalse){
-		if(this[_COLLECTIONOP[op]] === true){
-			this[_COLLECTIONOP[op]] = false;
-			fxTrue();
-		}
-		else fxFalse;
-		return this;
+	_op(op){
+		var flag = this[_COLLECTIONOP[op]];
+		this[_COLLECTIONOP[op]] = false;
+		return flag;
 	}
 });
