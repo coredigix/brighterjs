@@ -40,7 +40,7 @@ function _makeElements(arg, result){
 		result.push(arg);
 	// brighterjs object, ArrayLike, jQuery, ...
 	else if(Reflect.has(arg, 'length') === true){
-		flattenArray(arg).forEach(ele => _makeElements(ele, result) });
+		flattenArray(arg).forEach(ele => _makeElements(ele, result) );
 		result = Array.prototype.filter.call(arg, ele => _isValidElement);
 	}
 	else 
