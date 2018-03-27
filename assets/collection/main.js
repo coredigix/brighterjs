@@ -112,4 +112,12 @@ class $$Collection extends Array {
 			super.unshift.apply(this, lst);
 		return this;
 	}
+
+	/**
+	 * @param  {HTMLElement} ele
+	 * @return {boolean}     true if this list contains this HTMLElement
+	 */
+	contains(ele){
+		return this.indexOf(ele) !== -1;
+	}
 }
