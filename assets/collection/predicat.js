@@ -15,14 +15,19 @@ $$.plugin({
 	 * .not.predicate(condition)	invert the condition state
 	 */
 	predicate	: function(predicat){
-		if(this._op('not'))
-			predicat	= (ele => !predicat(ele));
+		var result;
+		if(this._op('all') === true)
+			result = this.every(predicat);
+		else if(this._op('or') === true)
+			result = this.some(predicat);
+		else if(this.length === 0)
+			result = false;
+		else
+			result = predicat(this[0]);
 		
-		if(this._op('all'))
-			return this.every(predicat);
-		else if(this._op('or'))
-			return this.some(predicat);
-		else return predicat(this[0]);
+		if(this._op('not') === true)
+			result = !result;
+		return result;
 	},
 
 	// operators
