@@ -97,7 +97,7 @@ function _siblingUntil(attr){
 				result	= this.all[attr	=== 'nextSibling' ? 'next' : 'prev']();
 		// else
 			else{
-				result	= $$(this.tags.map(
+				result	= $$(this.map(
 					returnsAfterTarget ?
 					(ele => {
 						elements	= [];

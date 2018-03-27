@@ -115,7 +115,7 @@ $$.plugin({
 		}
 		// 
 		else throw new Error('Illegal argument');
-	}
+	},
 
 	/**
 	 * matches elements that contains some childrens
