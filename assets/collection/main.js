@@ -1,6 +1,4 @@
 
-
-
 class $$Collection extends Array {
 	get [Symbol.isConcatSpreadable](){ return true; }
 	// make array concat spreadable

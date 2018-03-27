@@ -7,8 +7,8 @@ $$.plugin({
 	/**
 	 * 
 	 */
-	animate		: function(){} //TODO
-	animateP	: function(){} //Animate and returns promise
+	animate		: function(){}, //TODO
+	animateP	: function(){}, //Animate and returns promise
 
 	/**
 	 * fade()		: fade toggle

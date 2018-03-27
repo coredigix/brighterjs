@@ -1,8 +1,8 @@
 ;(function(){
 	'use strict';
-	//=include collection/*.js
 	//=require dom/main-fx.js
 	//=include plugin.js
+	//=include collection/*.js
 	//=require dom/*.js
 
 	//=include assert.js
