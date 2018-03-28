@@ -1,5 +1,6 @@
 /**
  * setting promise delay
+ * setTimeout promise alternative
  */
 
 function delay(tme){
