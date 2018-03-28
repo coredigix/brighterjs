@@ -119,3 +119,5 @@ class $$Collection extends Array {
 		return this.indexOf(ele) !== -1;
 	}
 }
+
+const $$prototype  = $$.prototype	= $$Collection.prototype;

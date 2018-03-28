@@ -3,6 +3,7 @@ $$.plugin({
 	 * .className()				: get the className of the fist eleemnt
 	 * .className(className)	: set the className of all elements
 	 * .all.className()			: get all elements className as a list
+	 * @return { string} classes joined by space
 	 */
 	className		: function(className){
 		return arguments.length === 0 ? this.attr('class') : this.attr({'class' : className});
@@ -10,11 +11,12 @@ $$.plugin({
 	/**
 	 * .addClass('cl1', 'cl2')
 	 * .addClass(['cl1', 'cl2'])
+	 * @return self
 	 */
-	addClass	: function(cl){
+	addClass	: function(cls){
 		if(!Array.isArray(cls))
 			cls	= Array.from(arguments);
-		this.forEach(tag => tag.classList.add.apply(tag.classList, cls));
+		return this.forEach(tag => tag.classList.add.apply(tag.classList, cls));
 	},
 	/**
 	 * removeClass('cl1', 'cl2')
@@ -39,7 +41,8 @@ $$.plugin({
 		return this.predicate( ele => cls.every( c => ele.classList.contains(c) ) );
 	},
 	/**
-	 * .toggleClass('className', force)
+	 * .toggleClass('class1')    			add class1 if not exist, otherwise remove it
+	 * .toggleClass('className', force)		add className if force === true, remove it otherwise
 	 * .toggleClass(['cl1', 'cl2'], force)
 	 * .
 	 */

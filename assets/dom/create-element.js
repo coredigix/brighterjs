@@ -13,8 +13,9 @@ function createElement(template){
 		if(template.length > 20) throw 't'; // use template gen
 		result	= document.createElement(template);
 	} catch(err) {
-		return _createElementFromTemplate(template);
+		result	= _createElementFromTemplate(template);
 	}
+	return result;
 }
 
 function _createElementFromTemplate(template){

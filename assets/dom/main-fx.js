@@ -15,17 +15,17 @@ function $$(arg){
 	else if(arguments.length !== 1) // debug
 		throw new Error('this API accepts only one argument');
 	// add this function to window load
-	else if(typeof arg === 'function')
+	else if(typeof arg === 'function'){
 		$$.document.load(arg); // execute this when the window is loaded
+		return undefined;
+	}
 	else {
 		result = [];
 		_makeElements(arg, result);
 	}
+	Object.setPrototypeOf(result, $$.prototype);
 	return result;
 }
-
-const $$prototype  = $$.prototype	= $$Collection.prototype;
-
 
 function _makeElements(arg, result){
 	// create element

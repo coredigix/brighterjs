@@ -13,7 +13,8 @@ function _addPlugin(plugins, isRoot){
 		dscptr	= plugins[i];
 		dscptr.configurable	= false;
 		dscptr.enumerable	= false;
-		dscptr.writable		= false;
+		if(dscptr.hasOwnProperty('dscptr') === true)
+			dscptr.writable		= false;
 	}
-	Object.defineProperties(isRoot ? $$ : $$.prototype, dscptr);
+	Object.defineProperties(isRoot ? $$ : $$.prototype, plugins);
 }
