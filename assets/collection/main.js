@@ -105,24 +105,57 @@ class $$BrighterJs extends Array {
 	}
 
 	/**
-	 * push new item to the array if desn't already exist
-	 * @return self
+	 * add element if not already exists
 	 */
-	push(){
-		var lst	= $$(arguments).filter(ele => this.indexOf(ele) === -1);
-		if(lst.length > 0)
-			super.push.apply(this, lst);
+	add(){
+		if(
+			arguments.length === 1
+			&& _isValidElement(arguments[0]) === true
+			&& this.indexOf(arguments[0]) === -1
+		)
+			super.push.call(this, arguments[0]);
+		else{
+			var lst	= $$(arguments).filter(ele => this.indexOf(ele) === -1);
+			if(lst.length > 0)
+				super.push.apply(this, lst);
+		}
 		return this;
 	}
 
 	/**
-	 * unsift an item if not exists
+	 * push new item to the array
+	 * @return self
+	 */
+	push(){
+		if(
+			arguments.length === 1
+			&& _isValidElement(arguments[0]) === true
+			// && this.indexOf(arguments[0]) === -1
+		)
+			super.push.call(this, arguments[0]);
+		else{
+			var lst	= $$(arguments); //.filter(ele => this.indexOf(ele) === -1);
+			if(lst.length > 0)
+				super.push.apply(this, lst);
+		}
+		return this;
+	}
+
+	/**
+	 * unsift an item
 	 * @return {[type]} [description]
 	 */
 	unshift(){
-		var lst	= $$(arguments).filter(ele => this.indexOf(ele) === -1);
-		if(lst.length > 0)
-			super.unshift.apply(this, lst);
+		if(
+			arguments.length === 1
+			&& _isValidElement(arguments[0]) === true
+		)
+			super.unshift.call(this, arguments[0]);
+		else{
+			var lst	= $$(arguments);//.filter(ele => this.indexOf(ele) === -1)
+			if(lst.length > 0)
+				super.unshift.apply(this, lst);
+		}
 		return this;
 	}
 
@@ -144,6 +177,17 @@ class $$BrighterJs extends Array {
 			len = this.length;
 		for(i=0; i < len; ++i)
 			result.push(cb(this[i], i, this));
+		return result;
+	}
+	/**
+	 * alternative to map, it returns a brighter object, and teste if returned elements are valide HTMLElements
+	 */
+	$map(cb){
+		var result = new $$BrighterJs();
+			i,
+			len = this.length;
+		for(i=0; i < len; ++i)
+			result.add(cb(this[i], i, this));
 		return result;
 	}
 }

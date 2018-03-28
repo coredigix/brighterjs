@@ -3,11 +3,11 @@ $$.plugin({
 	 * get a new collection with parents of current elements
 	 */
 	get parent(){
-		return this.map(ele => ele.parentNode).unique();
+		return this.$map(ele => ele.parentNode);
 	},
 	// get a new collection with offsetParents of current elments
 	get offsetParent(){
-		return this.map(ele => ele.offsetParent).unique();
+		return this.$map(ele => ele.offsetParent);
 	},
 
 	/**

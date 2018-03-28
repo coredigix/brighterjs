@@ -17,17 +17,17 @@ $$.rootPlugin({
 });
 $$.plugin({
 	find	: function(selector){
-		return $$( this.map(tag => _find(tag, selector)) ).unique();
+		return $$( this.$map(tag => _find(tag, selector)) ).unique();
 	},
 	findAll	: function(selector){
-		return $$( this.map(tag => tag.querySelectorAll(selector)) ).unique();
+		return $$( this.$map(tag => tag.querySelectorAll(selector)) ).unique();
 	},
 
 	query	: function(selector){
-		return $$( this.map(tag => _find(tag, selector) ) ).unique();
+		return $$( this.$map(tag => _find(tag, selector) ) ).unique();
 	},
 	queryAll: function(selector){
-		return $$( this.map(tag => tag.querySelectorAll(selector)) ).unique();
+		return $$( this.$map(tag => tag.querySelectorAll(selector)) ).unique();
 	}
 });
 

@@ -97,7 +97,7 @@ function _siblingUntil(attr){
 				result	= this.all[attr	=== 'nextSibling' ? 'next' : 'prev']();
 		// else
 			else{
-				result	= $$(this.map(
+				result	= this.$map(
 					returnsAfterTarget ?
 					(ele => {
 						elements	= [];
@@ -123,7 +123,7 @@ function _siblingUntil(attr){
 							elements.push(ele);
 						return elements;
 					})
-				));
+				);
 			}
 		return result;
 	}
