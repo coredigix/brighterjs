@@ -5,17 +5,35 @@
 $$.plugin({
 	/**
 	 * get/set data associated with an HTML element
-	 * .data.
-	 * .all.data.
-	 * @return {[type]} [description]
+	 * .data()				// returns object representing all stored data on the first element
+	 * .all.data()			// return list of object representing all stored data on all elements
+	 *
+	 * .data('key')			// get this associated data
+	 * .data('key', value) 	// set data
 	 */
-	get data(){
-		return this.get(ele => {
-			var data	= htmlElementData[ele];
-			if(data === undefined)
-				data	= htmlElementData[ele] = {};
-			return data;
-		});
+	data(key, value){
+		var data;
+		// return all data
+		if(arguments.length > 3) throw new Error('Illegal arguments');
+		// set data value of all elements
+		else if(arguments.length === 3)
+			return this.forEach(ele => {
+				data	= htmlElementData[ele];
+				if(data === undefined)
+					data	= htmlElementData[ele] = {};
+				data[key]	= value;
+			});
+		else
+			return this.get(ele => {
+				// init
+				data	= htmlElementData[ele];
+				if(data === undefined)
+					data	= htmlElementData[ele] = {};
+				// get only specified data
+				if(arguments.length === 1)
+					data	= data[key];
+				return data;
+			});
 	}
 });
 
