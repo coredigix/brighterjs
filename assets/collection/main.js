@@ -1,5 +1,5 @@
 
-class $$Collection extends Array {
+class $$BrighterJs extends Array {
 	get [Symbol.isConcatSpreadable](){ return true; }
 	// make array concat spreadable
 	// get [ArrayUtils.spreadable](){ return true; }
@@ -118,6 +118,19 @@ class $$Collection extends Array {
 	contains(ele){
 		return this.indexOf(ele) !== -1;
 	}
+
+	/**
+	 * map elements, faster and returns an Array
+	 * instead of using [Symbol.species] that will affect other methodes
+	 */
+	map(cb) {
+		var result = [],
+			i,
+			len = this.length;
+		for(i=0; i < len; ++i)
+			result.push(cb(this[i], i, this));
+		return result;
+	}
 }
 
-const $$prototype  = $$.prototype	= $$Collection.prototype;
+const $$prototype  = $$.prototype	= $$BrighterJs.prototype;

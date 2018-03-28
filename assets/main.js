@@ -1,13 +1,14 @@
 ;(function(){
 	'use strict';
 	//=require dom/main-fx.js
-	//=include plugin.js
-	//=include collection/*.js
+	//=require collection/main.js
+	//=require plugin.js
+	//=require collection/*.js
 	//=require dom/*.js
 
-	//=include assert.js
+	//=require assert.js
 
 
 	// make it global
-	window.$$ = window.BrighterJS = $$;
+	window.$$ = window.$$BrighterJs = $$;
 })();

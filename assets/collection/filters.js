@@ -62,7 +62,7 @@ $$.plugin({
 	 * last('div.cc')				get the last element that matches this selector
 	 */
 	last(condition){
-		this.rtl.first(condition);
+		return this.rtl.first(condition);
 	},
 
 	
@@ -127,7 +127,7 @@ $$.plugin({
 		if(arguments.length !== 1)
 			throw new Error('Illegal arguments length');
 
-		return this.filter(ee => _find(ele, selector) !== undefined); // "not" is implemented inside "filter" function
+		return this.filter(ele => _find(ele, selector) !== null); // "not" is implemented inside "filter" function
 	},
 
 	/**
