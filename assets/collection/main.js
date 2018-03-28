@@ -27,14 +27,14 @@ class $$BrighterJs extends Array {
 		return this.slice(0);
 	}
 
-	/** remove all elemnts */
+	/** remove all elements */
 	clear(){
 		this.splice(0);
 		return this;
 	}
 
 	/**
-	 * each			iterate on the list
+	 * each			iterate on the list, break when callback returns false
 	 * rtl.each	iterate right to left
 	 */
 	each(cb){
@@ -53,7 +53,7 @@ class $$BrighterJs extends Array {
 	}
 
 	/**
-	 * forEach
+	 * forEach, iterate on the array, do not break
 	 * rtl.forEach	iterate right to left
 	 */
 	forEach(cb){
@@ -86,8 +86,15 @@ class $$BrighterJs extends Array {
 		return this[index];
 	}
 
+	/**
+	 * Array::concat equivalent
+	 */
 	concat(){ super.concat($$(arguments))}
 
+	/**
+	 * see Array::splice for more details
+	 * @return { array} an array containing removed items
+	 */
 	splice(start, rmCount){
 		if(arguments.length > 2){
 			var args = $$(Array.slice.call(arguments, 2));
@@ -97,6 +104,10 @@ class $$BrighterJs extends Array {
 		else super.splice(start, rmCount);
 	}
 
+	/**
+	 * push new item to the array if desn't already exist
+	 * @return self
+	 */
 	push(){
 		var lst	= $$(arguments).filter(ele => this.indexOf(ele) === -1);
 		if(lst.length > 0)
@@ -104,6 +115,10 @@ class $$BrighterJs extends Array {
 		return this;
 	}
 
+	/**
+	 * unsift an item if not exists
+	 * @return {[type]} [description]
+	 */
 	unshift(){
 		var lst	= $$(arguments).filter(ele => this.indexOf(ele) === -1);
 		if(lst.length > 0)

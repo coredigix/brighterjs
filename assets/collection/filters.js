@@ -7,6 +7,7 @@ $$.plugin({
  * filter($$Object | jQuery | arrayLike)	// return intersection of this array and current array
  * 
  * not.filter			// inverse the result of the filter
+ * @return {array} list of new elements that matches the condition
  */
 	filter		: function(condition){
 		var fx;
@@ -14,7 +15,7 @@ $$.plugin({
 			throw new Error('Needs exactly one argument');
 		// create filter fx
 		if(typeof condition === 'string')
-			fx	= ( ele => matcheSelector(ele, condition));
+			fx	= ( ele => matchesSelector(ele, condition));
 		// match function
 		else if(typeof condition === 'function')
 			fx	= condition;
@@ -33,6 +34,7 @@ $$.plugin({
 	},
 
 	/**
+	 * return the first element that matches a condition
 	 * get first element that matches a condition
 	 * first()							get the first element
 	 * first(ele => true|false) 		get the first element that matches this condition
@@ -94,7 +96,8 @@ $$.plugin({
 	// },
 
 	/**
-	 * .get(int)		get this element
+	 * execute a function on the first element and returns its value
+	 * .get(int)		get this element, equivalent to this[int]
 	 * .get(cb) 		execute operation on the first element and returns it's value
 	 * .all.get(cb)		equivalent to .map(cb)
 	 */
@@ -122,6 +125,7 @@ $$.plugin({
 	 * .has(selector)		: select elements that has some childs
 	 * .has(ArrayLike)		: Array, $$Object, HTMLElements or even jQuery object
 	 * .not.has	: inverse of has
+	 * @param {string} selector css selector
 	 */
 	has			: function(selector){
 		if(arguments.length !== 1)
@@ -131,7 +135,7 @@ $$.plugin({
 	},
 
 	/**
-	 * filter to get only visible items
+	 * filter to get only visible items (with style.display != none && style.visibility!= hidden)
 	 * visible		// filter visible items
 	 * not.visible	// filter hidden items
 	 */
@@ -139,21 +143,24 @@ $$.plugin({
 
 	/**
 	 * filter to get only visible items in the view port (visible to the user)
+	 * get only elements that we see in viewport
 	 * visible		// filter visible items
 	 * not.visible	// filter hidden items
 	 */
 	 get userVisible(){ return this.filter(_elementIsUserVisible); },
 
 	/**
-	 * get only elements attached to DOM
-	 * get only elements not attached to DOM
+	 * .attached		get only elements attached to DOM
+	 * .not.attached	get only elements not attached to DOM
 	 */
 	 get attached(){ return this.filter(_elementIsAttached); },
 
 	/**
+	 * boolean equivaltent to filter functions
 	* isVisible()		: is the first tag is visible
 	* or.isVisible()	: is at least one tag is visible
 	* all.isVisible()	: is all tags are visible
+	* @return {boolean} true if the element is visible (see .visible above for more details)
 	*/
 	isVisible		: function(){ return this.predicate(_elementIsVisible); },
 	isUserVisible	: function(){ return this.predicate(_elementIsUserVisible); },

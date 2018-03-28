@@ -1,6 +1,7 @@
 /**
  * flatten array
  * recursive function is faster when level < 5
+ * make array flatten, used with $$ main function to make flat all arrays passed in arguments
  */
 
 const FLATTEN_ARRAY_MAX_LEVEL = 5;
